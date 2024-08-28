@@ -1,8 +1,8 @@
-import pandas as pd
-from scipy.ndimage import uniform_filter1d
-from scipy.signal import find_peaks
+# 수정된 추세선 기반의 정밀한 이상치 제거와 피크 검출 후 Excel 파일로 저장
+file_path = '/mnt/data/HJIMP.asc'  # 분석할 파일 경로
+output_excel = '/mnt/data/detected_strictly_filtered_peaks_v2.xlsx'  # 결과를 저장할 엑셀 파일 이름
 
-def detect_and_save_voltage_peaks(file_path, output_excel):
+def detect_and_save_voltage_peaks_with_strict_trendline(file_path, output_excel, degree=4, z_threshold=2.5):
     # Load the entire file data
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -22,24 +22,42 @@ def detect_and_save_voltage_peaks(file_path, output_excel):
     data = pd.read_csv(pd.io.common.StringIO(data_str), delim_whitespace=True)
 
     # Select the 'Voltage' column and filter for numeric values
-    voltage_data = pd.to_numeric(data['Voltage'], errors='coerce').dropna()
+    voltage_data = pd.to_numeric(data['Voltage'], errors='coerce').dropna().reset_index(drop=True)
 
-    # Estimate baseline and normalize the signal
-    baseline = uniform_filter1d(voltage_data, size=100)
-    normalized_voltage = voltage_data - baseline
+    # Create a trendline using polynomial regression
+    X = np.arange(len(voltage_data)).reshape(-1, 1)
+    poly = PolynomialFeatures(degree=degree)
+    X_poly = poly.fit_transform(X)
+    model = LinearRegression().fit(X_poly, voltage_data)
+    trendline = model.predict(X_poly)
+
+    # Calculate the residuals (difference from the trendline)
+    residuals = voltage_data - trendline
+
+    # Detect outliers based on Z-score
+    z_scores = (residuals - residuals.mean()) / residuals.std()
+    outliers = np.abs(z_scores) > z_threshold
+
+    # Filter out the outliers
+    filtered_voltage_data = voltage_data[~outliers]
+
+    # Estimate baseline and normalize the filtered signal
+    baseline = uniform_filter1d(filtered_voltage_data, size=100)
+    normalized_voltage = filtered_voltage_data - baseline
 
     # Detect peaks
     peaks, _ = find_peaks(normalized_voltage, distance=50)
-    peak_voltages = voltage_data.iloc[peaks]
+    peak_voltages = filtered_voltage_data.iloc[peaks]
 
-    # Save the peaks to a DataFrame
-    peak_df = pd.DataFrame({'Peak Voltage': peak_voltages})
+    # Add row indices (1-based index)
+    peak_df = pd.DataFrame({
+        'Row Index': peaks + 1,  # +1 to match typical row numbering
+        'Peak Voltage': peak_voltages.values
+    })
 
-    # Save the result to an Excel file
+    # Save the filtered peaks to an Excel file
     peak_df.to_excel(output_excel, index=False)
-    print(f"Detected peaks saved to {output_excel}")
+    print(f"Detected and strictly filtered peaks saved to {output_excel}")
 
 # Example usage
-file_path = 'your_file_path_here.asc'  # Enter the path to your data file here
-output_excel = 'detected_peaks.xlsx'  # Name of the Excel file to save results
-detect_and_save_voltage_peaks(file_path, output_excel)
+detect_and_save_voltage_peaks_with_strict_trendline(file_path, output_excel)
