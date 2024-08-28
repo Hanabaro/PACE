@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Read the image
+# Read the image.
 image = cv2.imread('/Users/hanabaro/Library/CloudStorage/OneDrive-MacquarieUniversity/00_Projects/2024_PACE/Dataset/GOODCELLS/1.jpg')
 
 # Convert image to grayscale

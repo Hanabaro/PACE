@@ -11,7 +11,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 import tensorflow as tf
 
-# Assume images are stored in a directory
+# Assume images are stored in a directory.
 image_dir = '/Users/hanabaro/Library/CloudStorage/OneDrive-MacquarieUniversity/00_Projects/2024_PACE/Dataset/DATASET'
 image_size = (224, 224)  # Adjust based on your images
 
