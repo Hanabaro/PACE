@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Read the image
-image = cv2.imread('C:/Users/yousf/OneDrive/Desktop/PACE PROJECT/Good/1.jpg')
+image = cv2.imread('/Users/hanabaro/Library/CloudStorage/OneDrive-MacquarieUniversity/00_Projects/2024_PACE/Dataset/GOODCELLS/1.jpg')
 
 # Convert image to grayscale
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

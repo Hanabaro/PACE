@@ -12,7 +12,7 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 import tensorflow as tf
 
 # Assume images are stored in a directory
-image_dir = 'C:/Users/yousf/OneDrive/Desktop/Dataset'
+image_dir = '/Users/hanabaro/Library/CloudStorage/OneDrive-MacquarieUniversity/00_Projects/2024_PACE/Dataset/DATASET'
 image_size = (224, 224)  # Adjust based on your images
 
 # Load and preprocess images
