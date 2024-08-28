@@ -3,7 +3,7 @@
 Created on Tue Aug 27 13:43:45 2024
 
 @author: yousf
-@supervised: Jincheol Kim
+@supervised: Jincheol Kim 
 """
 
 import os
