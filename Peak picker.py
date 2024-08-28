@@ -1,8 +1,11 @@
-# 수정된 추세선 기반의 정밀한 이상치 제거와 피크 검출 후 Excel 파일로 저장
-file_path = '/mnt/data/HJIMP.asc'  # 분석할 파일 경로
-output_excel = '/mnt/data/detected_strictly_filtered_peaks_v2.xlsx'  # 결과를 저장할 엑셀 파일 이름
+import pandas as pd
+import numpy as np
+from scipy.ndimage import uniform_filter1d
+from scipy.signal import find_peaks
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
 
-def detect_and_save_voltage_peaks_with_strict_trendline(file_path, output_excel, degree=4, z_threshold=2.5):
+def detect_and_save_voltage_peaks_balanced(file_path, output_excel, degree=2, z_threshold=3.0):
     # Load the entire file data
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -24,7 +27,7 @@ def detect_and_save_voltage_peaks_with_strict_trendline(file_path, output_excel,
     # Select the 'Voltage' column and filter for numeric values
     voltage_data = pd.to_numeric(data['Voltage'], errors='coerce').dropna().reset_index(drop=True)
 
-    # Create a trendline using polynomial regression
+    # Create a trendline using a simpler polynomial regression (degree 2)
     X = np.arange(len(voltage_data)).reshape(-1, 1)
     poly = PolynomialFeatures(degree=degree)
     X_poly = poly.fit_transform(X)
@@ -34,7 +37,7 @@ def detect_and_save_voltage_peaks_with_strict_trendline(file_path, output_excel,
     # Calculate the residuals (difference from the trendline)
     residuals = voltage_data - trendline
 
-    # Detect outliers based on Z-score
+    # Detect outliers based on a wider Z-score threshold
     z_scores = (residuals - residuals.mean()) / residuals.std()
     outliers = np.abs(z_scores) > z_threshold
 
@@ -57,7 +60,9 @@ def detect_and_save_voltage_peaks_with_strict_trendline(file_path, output_excel,
 
     # Save the filtered peaks to an Excel file
     peak_df.to_excel(output_excel, index=False)
-    print(f"Detected and strictly filtered peaks saved to {output_excel}")
+    print(f"Detected and filtered peaks saved to {output_excel}")
 
 # Example usage
-detect_and_save_voltage_peaks_with_strict_trendline(file_path, output_excel)
+file_path = '/mnt/data/HJIMP.asc'  # Enter the path to your data file here
+output_excel = '/mnt/data/detected_peaks_balanced.xlsx'  # Name of the Excel file to save results
+detect_and_save_voltage_peaks_balanced(file_path, output_excel)
