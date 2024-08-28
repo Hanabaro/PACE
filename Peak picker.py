@@ -62,7 +62,7 @@ def detect_and_save_voltage_peaks_balanced(file_path, output_excel, degree=2, z_
     peak_df.to_excel(output_excel, index=False)
     print(f"Detected and filtered peaks saved to {output_excel}")
 
-# Example usage
+# Example usage.
 file_path = '/mnt/data/HJIMP.asc'  # Enter the path to your data file here
 output_excel = '/mnt/data/detected_peaks_balanced.xlsx'  # Name of the Excel file to save results
 detect_and_save_voltage_peaks_balanced(file_path, output_excel)
