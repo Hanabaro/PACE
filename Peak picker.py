@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 from scipy.ndimage import uniform_filter1d
@@ -5,8 +6,17 @@ from scipy.signal import find_peaks
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 
+def generate_unique_filename(output_excel):
+    base, ext = os.path.splitext(output_excel)
+    counter = 1
+    new_filename = output_excel
+    while os.path.exists(new_filename):
+        new_filename = f"{base}({counter}){ext}"
+        counter += 1
+    return new_filename
+
 def detect_and_save_voltage_peaks_balanced(file_path, output_excel, degree=2, z_threshold=3.0):
-    # Load the entire file data
+    # Load the entire file data..
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
@@ -22,7 +32,7 @@ def detect_and_save_voltage_peaks_balanced(file_path, output_excel, degree=2, z_
 
     # Convert data to DataFrame
     data_str = ''.join(data_lines)
-    data = pd.read_csv(pd.io.common.StringIO(data_str), delim_whitespace=True)
+    data = pd.read_csv(pd.io.common.StringIO(data_str), sep='\s+')
 
     # Select the 'Voltage' column and filter for numeric values
     voltage_data = pd.to_numeric(data['Voltage'], errors='coerce').dropna().reset_index(drop=True)
@@ -58,11 +68,14 @@ def detect_and_save_voltage_peaks_balanced(file_path, output_excel, degree=2, z_
         'Peak Voltage': peak_voltages.values
     })
 
+    # Generate a unique file name
+    output_excel = generate_unique_filename(output_excel)
+
     # Save the filtered peaks to an Excel file
     peak_df.to_excel(output_excel, index=False)
     print(f"Detected and filtered peaks saved to {output_excel}")
 
 # Example usage.
-file_path = '/mnt/data/HJIMP.asc'  # Enter the path to your data file here
-output_excel = '/mnt/data/detected_peaks_balanced.xlsx'  # Name of the Excel file to save results
+file_path = '/Users/hanabaro/Library/CloudStorage/OneDrive-MacquarieUniversity/00_Projects/2024_PACE/Dataset/DATASET/HJIMP11_1.asc'  # Enter the path to your data file here
+output_excel = '/Users/hanabaro/Downloads/data/test.xlsx'  # Name of the Excel file to save results
 detect_and_save_voltage_peaks_balanced(file_path, output_excel)
