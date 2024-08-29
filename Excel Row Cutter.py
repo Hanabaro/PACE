@@ -1,3 +1,6 @@
+## The first row should be the header of the data.
+## The actual data starts from the second row.
+
 import os
 import pandas as pd
 
