@@ -11,7 +11,7 @@ def generate_unique_filename(output_excel):
     return new_filename
 
 def convert_asc_to_excel(file_path, output_excel):
-    # Load the entire .asc file
+    # Load the entire .asc file.
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
