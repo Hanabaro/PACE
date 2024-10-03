@@ -41,3 +41,30 @@ def convert_images_to_2d_grayscale(source_folder, destination_folder):
 source_folder = 'C:/Users/yousf/OneDrive/Desktop/solar_model/images/'  # Replace with the path to your source folder
 destination_folder = 'C:/Users/yousf/OneDrive/Desktop/solar_model/images/'  # Replace with the path to your destination folder
 convert_images_to_2d_grayscale(source_folder, destination_folder)
+
+########################################To check image Channel######################################
+import cv2
+
+def check_image_channels(image_path):
+    """
+    Check the number of channels in an image and return the result.
+    """
+    # Read the image
+    image = cv2.imread(image_path)
+    
+    if image is None:
+        print("Error: Image could not be loaded. Check the path.")
+        return
+    
+    # Check the number of channels
+    if len(image.shape) == 2:
+        print(f"The image is grayscale with 1 channel.")
+    elif len(image.shape) == 3:
+        print(f"The image is a color image with {image.shape[2]} channels.")
+    else:
+        print("Error: Unsupported image format.")
+
+# Example usage
+image_path = 'C:/Users/yousf/OneDrive/Desktop/solar_model/images/_20240902_151621.jpg' # Replace with your image path
+check_image_channels(image_path)
+
